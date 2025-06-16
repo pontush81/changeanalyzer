@@ -13,40 +13,41 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8faf9;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
         
         .container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+            padding: 60px 40px;
+            max-width: 580px;
             width: 100%;
+            margin: 0 auto;
             text-align: center;
         }
         
         .logo {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 3.5rem;
+            margin-bottom: 24px;
+            filter: grayscale(30%);
         }
         
         h1 {
-            color: #333;
-            font-size: 2rem;
-            margin-bottom: 10px;
-            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         
         .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            line-height: 1.5;
         }
         
         .upload-area {
@@ -60,13 +61,13 @@
         }
         
         .upload-area:hover {
-            border-color: #667eea;
-            background-color: #f8f9ff;
+            border-color: #10b981;
+            background-color: #f0fdf4;
         }
         
         .upload-area.dragover {
-            border-color: #667eea;
-            background-color: #f0f3ff;
+            border-color: #10b981;
+            background-color: #ecfdf5;
         }
         
         .upload-icon {
@@ -86,21 +87,23 @@
         }
         
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #10b981;
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
+            padding: 16px 32px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
             display: inline-block;
             text-decoration: none;
         }
         
         .btn:hover {
-            transform: translateY(-2px);
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
         .btn:active {
@@ -128,16 +131,18 @@
         
         .features {
             text-align: left;
-            margin-top: 30px;
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 15px;
+            margin-top: 40px;
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
         }
         
         .features h3 {
-            color: #333;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            color: #1a1a1a;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            font-weight: 600;
         }
         
         .features ul {
@@ -153,7 +158,7 @@
         
         .features li::before {
             content: "✓";
-            color: #28a745;
+            color: #10b981;
             font-weight: bold;
             position: absolute;
             left: 0;
@@ -178,7 +183,7 @@
         
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border-top: 3px solid #10b981;
             border-radius: 50%;
             width: 40px;
             height: 40px;

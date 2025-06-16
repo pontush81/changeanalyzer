@@ -1,30 +1,23 @@
-#!/usr/bin/env python3
-"""
-Webb-baserat verktyg för att analysera förändringar mellan Current och Proposed värden i Excel-filer
-Vercel-compatible version
-"""
-
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 import pandas as pd
 import os
 import uuid
 from werkzeug.utils import secure_filename
 from typing import List, Tuple, Dict
-import io
-import base64
-import tempfile
 
-# Get the directory of this file
+# Get the directory of this file for template path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(os.path.dirname(current_dir), 'templates')
 
 app = Flask(__name__, template_folder=template_dir)
 app.secret_key = 'your-secret-key-change-this-in-production'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max filstorlek
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-# Use temporary directories for Vercel
+# Use /tmp for Vercel serverless functions
 UPLOAD_FOLDER = '/tmp/uploads'
 RESULTS_FOLDER = '/tmp/results'
+
+# Create directories
 for folder in [UPLOAD_FOLDER, RESULTS_FOLDER]:
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -38,7 +31,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def find_current_proposed_pairs(df: pd.DataFrame) -> List[Tuple[str, str, str]]:
-    """Hittar alla matchande Current/Proposed kolumnpar"""
+    """Find all matching Current/Proposed column pairs"""
     current_cols = [col for col in df.columns if ' - Current' in col]
     
     pairs = []
@@ -48,7 +41,7 @@ def find_current_proposed_pairs(df: pd.DataFrame) -> List[Tuple[str, str, str]]:
         if proposed_col in df.columns:
             pairs.append((base_name, current_col, proposed_col))
     
-    # Hantera speciella fall
+    # Handle special cases
     special_cases = [
         ('Hourly Rate', 'Hourly Rate Current - Amount', 'Hourly Rate Proposed - Amount'),
         ('Manager(s)', 'Manager(s) - Current', 'Manager(s) - Proposed')
@@ -62,7 +55,7 @@ def find_current_proposed_pairs(df: pd.DataFrame) -> List[Tuple[str, str, str]]:
     return sorted(pairs)
 
 def analyze_changes(df: pd.DataFrame, pairs: List[Tuple[str, str, str]]) -> Dict:
-    """Analyserar förändringar för varje rad och kolumnpar"""
+    """Analyze changes for each row and column pair"""
     changes = {
         'summary': {},
         'details': [],
@@ -110,7 +103,7 @@ def analyze_changes(df: pd.DataFrame, pairs: List[Tuple[str, str, str]]) -> Dict
     return changes
 
 def create_results_file(changes: Dict, df: pd.DataFrame, original_filename: str) -> str:
-    """Skapar resultat Excel-fil och returnerar filnamnet"""
+    """Create result Excel file and return filename"""
     summary_data = []
     
     for employee in changes['details']:
@@ -127,7 +120,7 @@ def create_results_file(changes: Dict, df: pd.DataFrame, original_filename: str)
     if summary_data:
         summary_df = pd.DataFrame(summary_data)
         
-        # Skapa unikt filnamn
+        # Create unique filename
         base_name = os.path.splitext(original_filename)[0]
         unique_id = str(uuid.uuid4())[:8]
         output_file = f"{base_name}_analysis_{unique_id}.xlsx"
@@ -137,7 +130,7 @@ def create_results_file(changes: Dict, df: pd.DataFrame, original_filename: str)
             summary_df.to_excel(writer, sheet_name='Förändringar', index=False)
             df.to_excel(writer, sheet_name='Original Data', index=False)
             
-            # Statistik
+            # Statistics
             stats_data = {
                 'Statistik': ['Totalt antal anställda', 'Anställda med förändringar', 'Anställda utan förändringar'],
                 'Antal': [changes['total_employees'], changes['employees_with_changes'], 
@@ -180,7 +173,7 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
             file.save(filepath)
             
-            # Analysera filen
+            # Analyze file
             df = pd.read_excel(filepath)
             pairs = find_current_proposed_pairs(df)
             
@@ -191,10 +184,10 @@ def upload_file():
             
             changes = analyze_changes(df, pairs)
             
-            # Skapa resultatfil
+            # Create results file
             result_filename = create_results_file(changes, df, filename)
             
-            # Rensa upp uppladdad fil
+            # Clean up uploaded file
             os.remove(filepath)
             
             return render_template('results.html', 
@@ -228,9 +221,4 @@ def download_file(filename):
 @app.errorhandler(413)
 def too_large(e):
     flash('Filen är för stor. Maximal filstorlek är 16MB.', 'error')
-    return redirect(url_for('index'))
-
-# Export the Flask app for Vercel
-# Vercel will automatically detect this as the WSGI application
-if __name__ == '__main__':
-    app.run(debug=True) 
+    return redirect(url_for('index')) 
